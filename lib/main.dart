@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:vimigoflutter/userForm.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +39,18 @@ class _MainPageState extends State<MainPage> {
         appBar: AppBar(
           title: const Text('Attendance List'),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (BuildContext context) {
+                  return const UserForm();
+                },
+              ),
+            );
+          },
+          child: const Icon(Icons.add),
+        ),
         body: StreamBuilder<List<User>>(
             stream: readUsers(),
             builder: (context, snapshot) {
@@ -64,8 +77,9 @@ class _MainPageState extends State<MainPage> {
         subtitle: Row(
           crossAxisAlignment: CrossAxisAlignment.start, //align left
           children: [
-            Text('${user.phone}', style: TextStyle(height: 1, fontSize: 12)),
-            Text('   '),
+            Text('${user.phone}',
+                style: const TextStyle(height: 1, fontSize: 12)),
+            const Text('   '),
             //Text(user.checkin.toIso8601String()), //normal format
             Text(timeago.format(user.checkin),
                 style: TextStyle(

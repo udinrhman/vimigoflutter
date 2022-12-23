@@ -56,12 +56,26 @@ class _UserFormState extends State<UserForm> {
           DateTimeField(
             controller: controllerCheckin,
             decoration: decoration('Checkin'),
-            format: DateFormat('yyyy-MM-dd'),
-            onShowPicker: (context, currentValue) => showDatePicker(
-                context: context,
-                firstDate: DateTime(1900),
-                lastDate: DateTime(2100),
-                initialDate: currentValue ?? DateTime.now()),
+            format: DateFormat('yyyy-MM-dd HH:mm'),
+            onShowPicker: (context, currentValue) async {
+              final date = await showDatePicker(
+                  //get date
+                  context: context,
+                  firstDate: DateTime(1900),
+                  lastDate: DateTime(2100),
+                  initialDate: currentValue ?? DateTime.now());
+              if (date != null) {
+                final time = await showTimePicker(
+                  //get time
+                  context: context,
+                  initialTime:
+                      TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                );
+                return DateTimeField.combine(date, time);
+              } else {
+                return currentValue;
+              }
+            },
           ),
           const SizedBox(height: 32),
           ElevatedButton(
