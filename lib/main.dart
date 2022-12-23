@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:vimigoflutter/search.dart';
 import 'package:vimigoflutter/userForm.dart';
 
 Future main() async {
@@ -41,6 +42,8 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
   Icon cusIcon = const Icon(Icons.search);
   Widget cusSearchBar = const Text("Attendance List");
 
+  String name = "";
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -59,6 +62,11 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
                         border: InputBorder.none,
                         hintText: "Search",
                       ),
+                      onSubmitted: (value) {
+                        name = value;
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => Screentwo(value: value)));
+                      },
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
