@@ -79,7 +79,7 @@ class _MainPageState extends State<MainPage> {
 
   Stream<List<User>> readUsers() => FirebaseFirestore.instance
       .collection('users')
-      .orderBy('checkin')
+      .orderBy('checkin', descending: true) //order by recent date
       .snapshots()
       .map((snapshot) =>
           snapshot.docs.map((doc) => User.fromJson(doc.data())).toList());
