@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "984489449130",
+    "project_id": "vimigoflutter",
+    "storage_bucket": "vimigoflutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984489449130:android:dbbee885791b0f5fa6e2d3",
+        "android_client_info": {
+          "package_name": "com.example.vimigoflutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "984489449130-7m4enecsi6hi8ouvrfovpig81uuivjqu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjoW8ZthocABY4_9yHgOWIj9S42A7IFko"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "984489449130-7m4enecsi6hi8ouvrfovpig81uuivjqu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "984489449130-cuhemmdvep7ddldo6kvdbgov77c6it6q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.vimigoflutter"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
