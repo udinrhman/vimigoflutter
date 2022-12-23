@@ -34,15 +34,43 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> with RestorationMixin {
+  final controllerUser = TextEditingController();
   final controller = TextEditingController();
   final f = DateFormat('yyyy-MM-dd hh:mm a');
   RestorableBool date = RestorableBool(true);
+  Icon cusIcon = const Icon(Icons.search);
+  Widget cusSearchBar = const Text("Attendance List");
 
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: const Text('Attendance List'),
-          actions: [
+          title: cusSearchBar,
+          actions: <Widget>[
+            IconButton(
+              icon: cusIcon,
+              onPressed: () {
+                setState(() {
+                  if (cusIcon.icon == Icons.search) {
+                    cusIcon = const Icon(Icons.cancel);
+                    cusSearchBar = TextField(
+                      controller: controllerUser,
+                      textInputAction: TextInputAction.go,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Search",
+                      ),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                      ),
+                    );
+                  } else {
+                    cusIcon = const Icon(Icons.search);
+                    cusSearchBar = const Text("Attendance List");
+                  }
+                });
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.access_time),
               onPressed: () {
@@ -50,7 +78,7 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
                   date.value = !date.value;
                 });
               },
-            )
+            ),
           ],
         ),
         floatingActionButton: FloatingActionButton(
