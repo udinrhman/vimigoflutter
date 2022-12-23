@@ -88,7 +88,7 @@ class _UserFormState extends State<UserForm> {
               ); // User
 
               createUser(user);
-
+              showSnackBar(context); //display success message
               Navigator.pop(context);
             },
           ),
@@ -106,6 +106,15 @@ class _UserFormState extends State<UserForm> {
 
     final json = user.toJson();
     await docUser.set(json);
+  }
+
+  showSnackBar(context) {
+    const snackBar = SnackBar(
+      content: Text('Attendance Added!'),
+      backgroundColor: Color.fromARGB(255, 106, 180, 107),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
 

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:vimigoflutter/userForm.dart';
 
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      restorationScopeId: "root",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.purple),
       home: const MainPage(),
@@ -31,17 +33,30 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with RestorationMixin {
   final controller = TextEditingController();
+  final f = DateFormat('yyyy-MM-dd hh:mm a');
+  RestorableBool date = RestorableBool(true);
 
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: const Text('Attendance List'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.access_time),
+              onPressed: () {
+                setState(() {
+                  date.value = !date.value;
+                });
+              },
+            )
+          ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.of(context).push(
+              //redirect to UserForm.dart
               MaterialPageRoute(
                 builder: (BuildContext context) {
                   return const UserForm();
@@ -80,8 +95,11 @@ class _MainPageState extends State<MainPage> {
             Text('${user.phone}',
                 style: const TextStyle(height: 1, fontSize: 12)),
             const Text('   '),
-            //Text(user.checkin.toIso8601String()), //normal format
-            Text(timeago.format(user.checkin),
+            //Text(), //normal format
+            Text(
+                date.value
+                    ? timeago.format(user.checkin)
+                    : f.format(user.checkin),
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontWeight: FontWeight.bold,
@@ -97,6 +115,15 @@ class _MainPageState extends State<MainPage> {
       .snapshots()
       .map((snapshot) =>
           snapshot.docs.map((doc) => User.fromJson(doc.data())).toList());
+
+  @override
+  // TODO: implement restorationId
+  String? get restorationId => "home_screen";
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(date, "date");
+  }
 }
 
 class User {
