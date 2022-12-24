@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:share_plus/share_plus.dart';
 
 // ignore: must_be_immutable
 class Search extends StatefulWidget {
@@ -48,7 +48,6 @@ class _SearchState extends State<Search> {
                           builder: (context) => Search(value: value)));
                     },
                     style: const TextStyle(
-                      color: Colors.white,
                       fontSize: 16.0,
                     ),
                   );
@@ -72,23 +71,16 @@ class _SearchState extends State<Search> {
       body: StreamBuilder<List<User>>(
           stream: readUsers(),
           builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text('Something went wrong! ${snapshot.error}');
-            } else if (snapshot.hasData) {
+            if (snapshot.hasData) {
               final users = snapshot.data!;
 
               return ListView(
                 children: users.map(buildUser).toList(),
               );
+            } else if (snapshot.hasError) {
+              return Text('Something went wrong! ${snapshot.error}');
             } else {
-              return const Center(
-                child: Text('No Result!',
-                    style: TextStyle(
-                        height: 1,
-                        fontSize: 20,
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold)),
-              );
+              return const Center(child: CircularProgressIndicator());
             }
           }),
     );
@@ -97,7 +89,7 @@ class _SearchState extends State<Search> {
   Widget buildUser(User user) => ListTile(
         leading: const CircleAvatar(
           backgroundColor: Color.fromARGB(255, 182, 98, 171),
-          child: Icon(Icons.account_circle),
+          child: Icon(Icons.account_circle_sharp),
         ),
         title: Text(user.user),
         subtitle: Row(
@@ -114,18 +106,38 @@ class _SearchState extends State<Search> {
                 )),
           ],
         ),
+        trailing: Wrap(
+          spacing: 12, // space between two icons
+          children: <Widget>[
+            IconButton(
+                onPressed: () {
+                  sharePressed(user);
+                },
+                icon: const Icon(
+                  Icons.share,
+                  color: Colors.purple,
+                )),
+          ],
+        ),
       );
 
   Stream<List<User>> readUsers() => FirebaseFirestore.instance
       .collection('users')
-      .orderBy('checkin', descending: true)
-      .where(
-        'user',
-        isEqualTo: value,
-      ) //order by recent date
+      .where('user', isGreaterThanOrEqualTo: value)
+      .where('user', isLessThan: value + 'z')
       .snapshots()
       .map((snapshot) =>
           snapshot.docs.map((doc) => User.fromJson(doc.data())).toList());
+
+  sharePressed(User user) {
+    String userName = user.user;
+    String phoneNo = '${user.phone}';
+    String checkindate = f.format(user.checkin);
+
+    var message =
+        'Name: $userName\nPhone no: +60$phoneNo\nLast checked in: $checkindate';
+    Share.share(message, subject: 'Contact Information');
+  }
 }
 
 class User {

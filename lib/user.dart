@@ -8,8 +8,6 @@ import 'package:share_plus/share_plus.dart';
 // ignore: must_be_immutable
 class UserInfo extends StatefulWidget {
   String value;
-  String text = '';
-  String subject = '';
   UserInfo({super.key, required this.value});
 
   @override
@@ -51,7 +49,6 @@ class _UserInfoState extends State<UserInfo> {
                           builder: (context) => Search(value: value)));
                     },
                     style: const TextStyle(
-                      color: Colors.white,
                       fontSize: 16.0,
                     ),
                   );
@@ -93,7 +90,7 @@ class _UserInfoState extends State<UserInfo> {
   Widget buildUser(User user) => ListTile(
         leading: const CircleAvatar(
           backgroundColor: Color.fromARGB(255, 182, 98, 171),
-          child: Icon(Icons.account_circle),
+          child: Icon(Icons.account_circle_sharp),
         ),
         title: Text(user.user),
         subtitle: Row(

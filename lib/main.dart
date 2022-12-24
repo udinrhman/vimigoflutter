@@ -70,7 +70,6 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
                             builder: (context) => Search(value: value)));
                       },
                       style: const TextStyle(
-                        color: Colors.white,
                         fontSize: 16.0,
                       ),
                     );
@@ -125,7 +124,7 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
   Widget buildUser(User user) => ListTile(
         leading: const CircleAvatar(
           backgroundColor: Color.fromARGB(255, 182, 98, 171),
-          child: Icon(Icons.account_circle),
+          child: Icon(Icons.account_circle_sharp),
         ),
         title: Text(user.user),
         subtitle: Row(
