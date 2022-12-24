@@ -103,6 +103,7 @@ class _UserFormState extends State<UserForm> {
   Future createUser(User user) async {
     // Reference to document
     final docUser = FirebaseFirestore.instance.collection('users').doc();
+    user.id = docUser.id;
 
     final json = user.toJson();
     await docUser.set(json);
@@ -112,6 +113,7 @@ class _UserFormState extends State<UserForm> {
     const snackBar = SnackBar(
       content: Text('Attendance Added!'),
       backgroundColor: Color.fromARGB(255, 106, 180, 107),
+      duration: Duration(milliseconds: 1000),
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -119,17 +121,20 @@ class _UserFormState extends State<UserForm> {
 }
 
 class User {
+  String id;
   final String user;
   final int phone;
   final DateTime checkin;
 
   User({
+    this.id = "",
     required this.user,
     required this.phone,
     required this.checkin,
   });
 
   Map<String, dynamic> toJson() => {
+        'id': id,
         'user': user,
         'phone': phone,
         'checkin': checkin,

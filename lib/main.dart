@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:vimigoflutter/search.dart';
 import 'package:vimigoflutter/userForm.dart';
+import 'package:vimigoflutter/user.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +46,6 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
   Widget cusSearchBar = const Text("Attendance List");
 
   String name = "";
-  String message = "";
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -62,13 +62,12 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
                       controller: controllerUser,
                       textInputAction: TextInputAction.go,
                       decoration: const InputDecoration(
-                        border: InputBorder.none,
                         hintText: "Search",
                       ),
                       onSubmitted: (value) {
                         name = value;
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => Screentwo(value: value)));
+                            builder: (context) => Search(value: value)));
                       },
                       style: const TextStyle(
                         color: Colors.white,
@@ -147,6 +146,14 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
                 )), //to change .ago format
           ],
         ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserInfo(value: user.id),
+            ),
+          );
+        },
       );
 
   Stream<List<User>> readUsers() => FirebaseFirestore.instance
@@ -157,7 +164,6 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
           snapshot.docs.map((doc) => User.fromJson(doc.data())).toList());
 
   @override
-  // TODO: implement restorationId
   String? get restorationId => "home_screen";
 
   @override
@@ -193,11 +199,13 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
 }
 
 class User {
+  String id;
   final String user;
   final int phone;
   final DateTime checkin;
 
   User({
+    this.id = "",
     required this.user,
     required this.phone,
     required this.checkin,
@@ -210,6 +218,7 @@ class User {
       };
 
   static User fromJson(Map<String, dynamic> json) => User(
+        id: json['id'],
         user: json['user'],
         phone: json['phone'],
         checkin: (json['checkin'] as Timestamp).toDate(),

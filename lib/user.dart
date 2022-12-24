@@ -1,28 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:vimigoflutter/search.dart';
+import 'package:share_plus/share_plus.dart';
 
 // ignore: must_be_immutable
-class Search extends StatefulWidget {
+class UserInfo extends StatefulWidget {
   String value;
-  Search({super.key, required this.value});
+  String text = '';
+  String subject = '';
+  UserInfo({super.key, required this.value});
 
   @override
-  _SearchState createState() => _SearchState(value);
+  _UserInfoState createState() => _UserInfoState(value);
 }
 
-class _SearchState extends State<Search> {
+class _UserInfoState extends State<UserInfo> {
   String value;
-  _SearchState(this.value);
+  _UserInfoState(this.value);
 
   final controllerUser = TextEditingController();
   final controller = TextEditingController();
   final f = DateFormat('yyyy-MM-dd hh:mm a');
   bool date = true;
   Icon cusIcon = const Icon(Icons.search);
-  Widget cusSearchBar = const Text("Search Result");
+  Widget cusSearchBar = const Text("User");
 
   @override
   Widget build(BuildContext context) {
@@ -81,14 +84,7 @@ class _SearchState extends State<Search> {
                 children: users.map(buildUser).toList(),
               );
             } else {
-              return const Center(
-                child: Text('No Result!',
-                    style: TextStyle(
-                        height: 1,
-                        fontSize: 20,
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold)),
-              );
+              return const Center(child: CircularProgressIndicator());
             }
           }),
     );
@@ -114,18 +110,41 @@ class _SearchState extends State<Search> {
                 )),
           ],
         ),
+        trailing: Wrap(
+          spacing: 12, // space between two icons
+          children: <Widget>[
+            IconButton(
+                onPressed: () {
+                  sharePressed(user);
+                },
+                icon: const Icon(
+                  Icons.share,
+                  color: Colors.purple,
+                )),
+          ],
+        ),
       );
 
   Stream<List<User>> readUsers() => FirebaseFirestore.instance
       .collection('users')
       .orderBy('checkin', descending: true)
       .where(
-        'user',
+        'id',
         isEqualTo: value,
       ) //order by recent date
       .snapshots()
       .map((snapshot) =>
           snapshot.docs.map((doc) => User.fromJson(doc.data())).toList());
+
+  sharePressed(User user) {
+    String userName = user.user;
+    String phoneNo = '${user.phone}';
+    String checkindate = f.format(user.checkin);
+
+    var message =
+        'Name: $userName\nPhone no: +60$phoneNo\nLast checked in: $checkindate';
+    Share.share(message, subject: 'Contact Information');
+  }
 }
 
 class User {
