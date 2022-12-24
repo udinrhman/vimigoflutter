@@ -37,12 +37,15 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> with RestorationMixin {
   final controllerUser = TextEditingController();
   final controller = TextEditingController();
+  late ScrollController _controller;
+
   final f = DateFormat('yyyy-MM-dd hh:mm a');
   RestorableBool date = RestorableBool(true);
   Icon cusIcon = const Icon(Icons.search);
   Widget cusSearchBar = const Text("Attendance List");
 
   String name = "";
+  String message = "";
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -111,6 +114,7 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
                 final users = snapshot.data!;
 
                 return ListView(
+                  controller: _controller,
                   children: users.map(buildUser).toList(),
                 );
               } else {
@@ -159,6 +163,32 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
   @override
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
     registerForRestoration(date, "date");
+  }
+
+  showSnackBar(context) {
+    //appear when user reach end of list
+    const snackBar = SnackBar(
+      content: Text('You have reached the end of the list'),
+      backgroundColor: Color.fromARGB(255, 215, 158, 226),
+      duration: Duration(milliseconds: 500),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  _scrollListener() {
+    if (_controller.offset >= _controller.position.maxScrollExtent &&
+        !_controller.position.outOfRange) {
+      //if scroll reach bottom
+      return showSnackBar(context);
+    }
+  }
+
+  @override
+  void initState() {
+    _controller = ScrollController();
+    _controller.addListener(_scrollListener);
+    super.initState();
   }
 }
 

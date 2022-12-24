@@ -107,13 +107,12 @@ class _ScreentwoState extends State<Screentwo> {
             Text('${user.phone}',
                 style: const TextStyle(height: 1, fontSize: 12)),
             const Text('   '),
-            //Text(), //normal format
             Text(date ? timeago.format(user.checkin) : f.format(user.checkin),
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontWeight: FontWeight.bold,
                   fontSize: 11,
-                )), //to change .ago format
+                )),
           ],
         ),
       );
