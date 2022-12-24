@@ -43,6 +43,7 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
   final f = DateFormat('yyyy-MM-dd hh:mm a');
   RestorableBool date = RestorableBool(true);
   Icon cusIcon = const Icon(Icons.search);
+  Icon dateIcon = const Icon(Icons.access_time);
   Widget cusSearchBar = const Text("Attendance List");
 
   String name = "";
@@ -81,10 +82,16 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.access_time),
+              icon: dateIcon,
               onPressed: () {
                 setState(() {
-                  date.value = !date.value;
+                  if (dateIcon.icon == Icons.access_time) {
+                    date.value = !date.value;
+                    dateIcon = const Icon(Icons.access_time_filled);
+                  } else {
+                    date.value = !date.value;
+                    dateIcon = const Icon(Icons.access_time);
+                  }
                 });
               },
             ),

@@ -13,15 +13,16 @@ class Search extends StatefulWidget {
   _SearchState createState() => _SearchState(value);
 }
 
-class _SearchState extends State<Search> {
+class _SearchState extends State<Search> with RestorationMixin {
   String value;
   _SearchState(this.value);
 
   final controllerUser = TextEditingController();
   final controller = TextEditingController();
   final f = DateFormat('yyyy-MM-dd hh:mm a');
-  bool date = true;
+  RestorableBool date = RestorableBool(true);
   Icon cusIcon = const Icon(Icons.search);
+  Icon dateIcon = const Icon(Icons.access_time);
   Widget cusSearchBar = const Text("Search Result");
 
   @override
@@ -59,10 +60,16 @@ class _SearchState extends State<Search> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.access_time),
+            icon: dateIcon,
             onPressed: () {
               setState(() {
-                date = !date;
+                if (dateIcon.icon == Icons.access_time) {
+                  date.value = !date.value;
+                  dateIcon = const Icon(Icons.access_time_filled);
+                } else {
+                  date.value = !date.value;
+                  dateIcon = const Icon(Icons.access_time);
+                }
               });
             },
           ),
@@ -98,7 +105,10 @@ class _SearchState extends State<Search> {
             Text('${user.phone}',
                 style: const TextStyle(height: 1, fontSize: 12)),
             const Text('   '),
-            Text(date ? timeago.format(user.checkin) : f.format(user.checkin),
+            Text(
+                date.value
+                    ? timeago.format(user.checkin)
+                    : f.format(user.checkin),
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontWeight: FontWeight.bold,
@@ -137,6 +147,14 @@ class _SearchState extends State<Search> {
     var message =
         'Name: $userName\nPhone no: +60$phoneNo\nLast checked in: $checkindate';
     Share.share(message, subject: 'Contact Information');
+  }
+
+  @override
+  String? get restorationId => "search_screen";
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(date, "date");
   }
 }
 

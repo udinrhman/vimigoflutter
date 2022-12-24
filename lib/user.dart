@@ -14,15 +14,16 @@ class UserInfo extends StatefulWidget {
   _UserInfoState createState() => _UserInfoState(value);
 }
 
-class _UserInfoState extends State<UserInfo> {
+class _UserInfoState extends State<UserInfo> with RestorationMixin {
   String value;
   _UserInfoState(this.value);
 
   final controllerUser = TextEditingController();
   final controller = TextEditingController();
   final f = DateFormat('yyyy-MM-dd hh:mm a');
-  bool date = true;
+  RestorableBool date = RestorableBool(true);
   Icon cusIcon = const Icon(Icons.search);
+  Icon dateIcon = const Icon(Icons.access_time);
   Widget cusSearchBar = const Text("User");
 
   @override
@@ -60,10 +61,16 @@ class _UserInfoState extends State<UserInfo> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.access_time),
+            icon: dateIcon,
             onPressed: () {
               setState(() {
-                date = !date;
+                if (dateIcon.icon == Icons.access_time) {
+                  date.value = !date.value;
+                  dateIcon = const Icon(Icons.access_time_filled);
+                } else {
+                  date.value = !date.value;
+                  dateIcon = const Icon(Icons.access_time);
+                }
               });
             },
           ),
@@ -99,7 +106,10 @@ class _UserInfoState extends State<UserInfo> {
             Text('${user.phone}',
                 style: const TextStyle(height: 1, fontSize: 12)),
             const Text('   '),
-            Text(date ? timeago.format(user.checkin) : f.format(user.checkin),
+            Text(
+                date.value
+                    ? timeago.format(user.checkin)
+                    : f.format(user.checkin),
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontWeight: FontWeight.bold,
@@ -141,6 +151,15 @@ class _UserInfoState extends State<UserInfo> {
     var message =
         'Name: $userName\nPhone no: +60$phoneNo\nLast checked in: $checkindate';
     Share.share(message, subject: 'Contact Information');
+  }
+
+  @override
+  // TODO: implement restorationId
+  String? get restorationId => "user_screen";
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(date, "date");
   }
 }
 
