@@ -1,6 +1,6 @@
 # vimigoflutter
 
-A new Flutter project.
+2nd Technical assesment from vimigo
 
 ## Getting Started
 
