@@ -103,7 +103,7 @@ class _UserInfoState extends State<UserInfo> with RestorationMixin {
         subtitle: Row(
           crossAxisAlignment: CrossAxisAlignment.start, //align left
           children: [
-            Text('${user.phone}',
+            Text('+60${user.phone}',
                 style: const TextStyle(height: 1, fontSize: 12)),
             const Text('   '),
             Text(
