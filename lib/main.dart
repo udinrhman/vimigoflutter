@@ -6,16 +6,26 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:vimigoflutter/search.dart';
 import 'package:vimigoflutter/userForm.dart';
 import 'package:vimigoflutter/user.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(const MyApp());
+  final prefs = await SharedPreferences.getInstance();
+  final showHome = prefs.getBool('showHome') ?? false;
+
+  runApp(MyApp(showHome: showHome));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool showHome;
+
+  const MyApp({
+    Key? key,
+    required this.showHome,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +33,7 @@ class MyApp extends StatelessWidget {
       restorationScopeId: "root",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.purple),
-      home: const MainPage(),
+      home: showHome ? MainPage() : OnboardingPage(),
     );
   }
 }
@@ -202,6 +212,153 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
     _controller.addListener(_scrollListener);
     super.initState();
   }
+}
+
+class OnboardingPage extends StatefulWidget {
+  const OnboardingPage({super.key});
+
+  @override
+  State<OnboardingPage> createState() => _OnboardingPageState();
+}
+
+class _OnboardingPageState extends State<OnboardingPage> {
+  final controller = PageController();
+  bool isLastPage = false;
+
+  @override
+  void dispose() {
+    controller.dispose();
+
+    super.dispose();
+  }
+
+  Widget buildPage({
+    required Color color,
+    required String urlImage,
+    required String title,
+    required String subtitle,
+  }) =>
+      Container(
+        color: color,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              urlImage,
+              fit: BoxFit.cover,
+              width: double.infinity,
+            ),
+            const SizedBox(height: 64),
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.purple.shade700,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                child: Text(subtitle,
+                    style: const TextStyle(color: Colors.black54))),
+          ],
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Container(
+          padding: const EdgeInsets.only(bottom: 80),
+          child: PageView(
+            controller: controller,
+            onPageChanged: (index) {
+              setState(() => isLastPage = index == 3);
+            },
+            children: [
+              buildPage(
+                  color: Colors.purple.shade50,
+                  urlImage: 'assets/add.png',
+                  title: 'ADD ATTENDANCE',
+                  subtitle: 'Click add icon to insert new attendance'),
+              buildPage(
+                  color: Colors.purple.shade50,
+                  urlImage: 'assets/clock.png',
+                  title: 'DATE FORMAT',
+                  subtitle: 'Click clock icon to change the date format'),
+              buildPage(
+                  color: Colors.purple.shade50,
+                  urlImage: 'assets/search.png',
+                  title: 'SEARCH',
+                  subtitle:
+                      'Click search icon to display textfield and insert any input'),
+              buildPage(
+                  color: Colors.purple.shade50,
+                  urlImage: 'assets/share.png',
+                  title: 'SHARE',
+                  subtitle:
+                      'Choose a list and click share button to share with other apps'),
+            ],
+          ),
+        ),
+        bottomSheet: isLastPage
+            ? TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(0),
+                  ),
+                  backgroundColor: Colors.purple.shade300,
+                  minimumSize: const Size.fromHeight(80),
+                ),
+                child: const Text(
+                  'Get Started',
+                  style: TextStyle(fontSize: 24),
+                ),
+                onPressed: () async {
+                  //naviagate directly to main page
+                  final prefs = await SharedPreferences.getInstance();
+                  prefs.setBool('showHome', true);
+
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const MainPage()),
+                  );
+                },
+              )
+            : Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                height: 80,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      child: const Text('SKIP'),
+                      onPressed: () => controller.jumpToPage(3),
+                    ),
+                    Center(
+                      child: SmoothPageIndicator(
+                        controller: controller,
+                        count: 4,
+                        effect: WormEffect(
+                          spacing: 16,
+                          dotColor: Colors.black26,
+                          activeDotColor: Colors.purple.shade300,
+                        ),
+                        onDotClicked: (index) => controller.animateToPage(index,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeIn),
+                      ),
+                    ),
+                    TextButton(
+                      child: const Text('NEXT'),
+                      onPressed: () => controller.nextPage(
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeInOut,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+      );
 }
 
 class User {
