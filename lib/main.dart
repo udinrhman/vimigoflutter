@@ -192,7 +192,7 @@ class _MainPageState extends State<MainPage> with RestorationMixin {
     const snackBar = SnackBar(
       content: Text('You have reached the end of the list'),
       backgroundColor: Color.fromARGB(255, 215, 158, 226),
-      duration: Duration(milliseconds: 500),
+      duration: Duration(milliseconds: 800),
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
